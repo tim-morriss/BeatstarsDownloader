@@ -1,0 +1,11 @@
+beautifulsoup4
+filetype
+halo
+mutagen
+pick
+pillow
+pydub
+requests
+simple-chalk
+tqdm
+validators

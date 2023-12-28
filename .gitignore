@@ -1,0 +1,10 @@
+/venv/
+/.idea/
+.DS_Store
+__pycache__/
+/build/
+/pyscrapetrain.egg-info/
+tracklist.txt
+/dist/
+*.ipynb
+*.log
