@@ -75,6 +75,8 @@ class BeatStarsDownloader:
         ) as h:
             options = Options()
             options.add_argument("--headless")
+            # options = webdriver.FirefoxOptions()
+            # options.headless = True
             driver = webdriver.Firefox(options=options)
             driver.get(url)
             self._scroll_down(driver)
