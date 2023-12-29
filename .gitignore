@@ -8,3 +8,5 @@ tracklist.txt
 /dist/
 *.ipynb
 *.log
+instructions.txt
+*.egg-info

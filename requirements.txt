@@ -6,6 +6,7 @@ pick
 pillow
 pydub
 requests
+selenium>=4.16.0
 simple-chalk
 tqdm
 validators
