@@ -109,3 +109,25 @@ beatstarsdownloader example_url_list.txt
 
 Example list of urls:
 ![image](https://raw.githubusercontent.com/tim-morriss/beatstarsdownloader/main/media/example_url_list.png)
+
+# Disclaimer
+
+**THIS TOOL IS STRICTLY FOR EDUCATIONAL PURPOSES ONLY.**
+
+**THE AUTHOR TAKES NO RESPONSIBILITY FOR THE USAGE OF THIS TOOL.**
+
+Disclaimer: Use of BeatstarsDownloader (this tool)
+
+This tool, BeatstarsDownloader, is provided to you as a convenience of downloading web assets. Before using this tool, it is important to understand and acknowledge the following:
+
+**Copyrighted Material**: The Author (referring to the author of this code) does not endorse or encourage the unauthorized downloading or distribution of copyrighted music. This tool is intended for use with music that you have the legal right to download and distribute.
+
+**User Responsibility**: The user acknowledges and agrees that they are solely responsible for ensuring that their use of BeatstarsDownloader complies with applicable copyright laws and regulations. Users must obtain the necessary permissions or licenses before downloading and using copyrighted material.
+
+**Legal Compliance**: The Author is not responsible for any legal consequences that may arise from the use of this tool for downloading copyrighted music without the proper authorization. Users should be aware of and comply with the copyright laws in their jurisdiction.
+
+**No Warranty**: The Author provides this tool "as is" without any warranty of any kind, expressed or implied. The Author makes no representations or warranties regarding the accuracy, reliability, or completeness of the tool.
+
+**Updates and Changes**: The Author reserves the right to make changes or updates to this tool at any time without notice. It is the user's responsibility to ensure they are using the latest version of the tool.
+
+By using BeatstarsDownloader, you agree to the terms and conditions outlined in this disclaimer. If you do not agree with these terms, you should not use the tool.
