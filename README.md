@@ -37,9 +37,7 @@ python main.py
 Feel free to use the built in terminal interface to download tracks from a single URL / artist name:
 
 ```bash
-
 beatstarsdownloader
-
 ```
 ![image](https://raw.githubusercontent.com/tim-morriss/beatstarsdownloader/main/media/terminal_ui.png)
 

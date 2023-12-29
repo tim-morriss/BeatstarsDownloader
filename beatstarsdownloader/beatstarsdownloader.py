@@ -106,11 +106,13 @@ class BeatStarsDownloader:
             artist name
         """
         return (
-            soup.find(
-                "span",
-                {"class": "name ng-star-inserted"}
-            ).text.strip()
-        ).strip()
+            helpers.slugify(
+                soup.find(
+                    "span",
+                    {"class": "name ng-star-inserted"}
+                ).text.strip()
+            )
+        )
 
     def _get_tracks(self):
         """
@@ -123,9 +125,13 @@ class BeatStarsDownloader:
                 "mp-card-figure-template", {"class": "track-template"}
         ):
             track_object = track.find("a", {"class": "name ng-star-inserted"})
-            self.track_names.append(track_object.text.strip())
+            self.track_names.append(
+                helpers.slugify(track_object.text.strip())
+            )
             self.mp3_urls.append(
-                f"https://main.v2.beatstars.com/stream?id={track_object['href'].lstrip('/TK')}&return=audio"
+                f"https://main.v2.beatstars.com/stream?id="
+                f"{track_object['href'].lstrip('/TK')}"
+                f"&return=audio"
             )
             self.artwork.append(track.find("img")['src'])
             # print(self.mp3_urls)
