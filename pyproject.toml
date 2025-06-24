@@ -1,0 +1,86 @@
+[project]
+name = "beatstarsdownloader"
+version = "0.1.2"
+description = "Tool for downloading all BeatStars tracks from an artist to mp3"
+authors = [
+    {name = "Tim Morriss", email = "tim.morriss@gmail.com"}
+]
+readme = "README.md"
+homepage = "https://github.com/tim-morriss/BeatstarsDownloader"
+repository = "https://github.com/tim-morriss/BeatstarsDownloader"
+documentation = "https://github.com/tim-morriss/BeatstarsDownloader#readme"
+keywords = ["beatstars", "downloader", "mp3", "music"]
+license = {text = "MIT"}
+requires-python = ">=3.9"
+dependencies = [
+    "beautifulsoup4 (>=4.13.4,<5.0.0)",
+    "filetype (>=1.2.0,<2.0.0)",
+    "halo (>=0.0.31,<0.0.32)",
+    "mutagen (>=1.47.0,<2.0.0)",
+    "pick (>=2.4.0,<3.0.0)",
+    "pillow (>=11.2.1,<12.0.0)",
+    "pydub (>=0.25.1,<0.26.0)",
+    "requests (>=2.32.4,<3.0.0)",
+    "selenium (>=4.33.0,<5.0.0)",
+    "simple-chalk (>=0.1.0,<0.2.0)",
+    "tqdm (>=4.67.1,<5.0.0)",
+    "validators (>=0.35.0,<0.36.0)"
+]
+
+[tool.codespell]
+skip = """
+*.db,\
+*.excalidraw,\
+*.js.map,\
+*.png,\
+*.pyc,\
+./bin,\
+./htmlcov,\
+./tmp,\
+./vendor,\
+Gemfile.lock,\
+node_modules,\
+package-lock.json,\
+poetry.lock
+"""
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.0.0"
+flake8 = "^6.0.0"
+isort = "^5.12.0"
+mypy = "^1.5.0"
+types-setuptools = "^69.0.0"
+codespell = "^2.2.0"
+flake8-pyproject = "^1.2.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503"]
+exclude = [
+    ".venv",
+    "venv",
+    ".git",
+    "__pycache__",
+    "*.egg-info",
+    "build",
+    "dist"
+]
+
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true

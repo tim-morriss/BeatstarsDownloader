@@ -6,7 +6,7 @@ It functions as a BeatStars downloader to mp3.
 Fork from [pyscrapetrain](https://github.com/tim-morriss/pyscrapeTrain).
 
 # Setup
-There are two ways to run this tool, either using the pip package or manuall installing the tool.
+There are two ways to run this tool, either using the pip package or manually installing the tool.
 
 Pip package method is preferred, only resort to using the manual install if you're having issues.
 ## Pip Package
@@ -18,19 +18,19 @@ pip install beatstarsdownloader
 ```
 
 ## Manual install
-First clone this repo, then install the `requirements.txt` file by using the following command:
+First clone this repo, then install dependencies using Poetry:
 
 ```bash
-pip install -r requirements.txt
+poetry install
 ```
 
 Then run the tool using this command:
 
 ```bash
-python main.py
+poetry run python main.py
 ```
 
-*For the rest of the readme, make sure to swap out the `beatstarsdownloader` command for `python main.py`.*
+*For the rest of the readme, make sure to swap out the `beatstarsdownloader` command for `poetry run python main.py`.*
 
 # How to use:
 ## Terminal interface

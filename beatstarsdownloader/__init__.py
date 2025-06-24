@@ -1,1 +1,1 @@
-from .config import __version__
+from .config import __version__  # noqa: F401
