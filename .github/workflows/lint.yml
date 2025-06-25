@@ -37,7 +37,7 @@ jobs:
     
     - name: Run mypy
       run: |
-        mypy .
+        mypy --python-version=3.9 --warn-return-any --warn-unused-configs --disallow-untyped-defs .
     
     - name: Run codespell
       run: |
