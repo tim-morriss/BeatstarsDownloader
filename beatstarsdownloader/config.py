@@ -1,8 +1,4 @@
-import tomllib  # type: ignore
-from pathlib import Path
-
-with open(Path(__file__).parent.parent / "pyproject.toml", "rb") as f:
-    __version__ = tomllib.load(f)["project"]["version"]
+__version__ = "0.1.4"
 
 __title__ = r"""
                     (                  (                                                 
