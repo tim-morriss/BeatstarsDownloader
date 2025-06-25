@@ -55,7 +55,7 @@ def query_yes_no(question: str, default: str = "yes") -> bool:
             sys.stdout.write("Please respond with 'yes' or 'no' " "(or 'y' or 'n').\n")
 
 
-def cli() -> tuple[str, Optional[str], bool, str]:
+def cli() -> tuple[str, Optional[str], bool, str, Optional[bool]]:
     parser = argparse.ArgumentParser(
         description="Tool for downloading BeatStars tracks."
     )
@@ -86,6 +86,14 @@ def cli() -> tuple[str, Optional[str], bool, str]:
     parser.add_argument(
         "-o", "--overwrite", dest="overwrite", default=False, action="store_true"
     )
+    parser.add_argument(
+        "-t",
+        "--track_select",
+        dest="track_select",
+        default=False,
+        action="store_true",
+        help="Allows you to interactively select tracks to download",
+    )
 
     if sys.argv[1:]:
         args = parser.parse_args(args=sys.argv[1:])
@@ -98,7 +106,8 @@ def cli() -> tuple[str, Optional[str], bool, str]:
         album = args.album
         overwrite = args.overwrite
         url = args.url
-        return output_dir, album, overwrite, url
+        track_select = args.track_select
+        return output_dir, album, overwrite, url, track_select
     else:
         first_menu_options = ["Download an artist's tracks", "Exit program"]
         first_menu_title = (
@@ -130,7 +139,13 @@ def cli() -> tuple[str, Optional[str], bool, str]:
                 )
                 or None
             )
-            return output_dir, album, overwrite, url
+            track_select = query_yes_no(
+                "BeatstarsDownloader can download all tracks by an artist or "
+                "download specific tracks. Do you want to select the tracks "
+                "to download?",
+                default="no",
+            )
+            return output_dir, album, overwrite, url, track_select
         elif first_menu_index == 1:
             exit()
         else:
@@ -138,7 +153,7 @@ def cli() -> tuple[str, Optional[str], bool, str]:
 
 
 def run() -> None:
-    output_dir, album, overwrite, url = cli()
+    output_dir, album, overwrite, url, track_select = cli()
 
     if helpers.is_local(url):
         try:
@@ -150,7 +165,7 @@ def run() -> None:
                         try:
                             BeatStarsDownloader(
                                 line.strip(), output_dir
-                            ).download_tracks(overwrite, album)
+                            ).download_tracks(overwrite, album, track_select)
                         except Exception as e:
                             print(e)
             else:
@@ -158,4 +173,6 @@ def run() -> None:
         except Exception as e:
             print(e)
     else:
-        BeatStarsDownloader(url, output_dir).download_tracks(overwrite, album)
+        BeatStarsDownloader(url, output_dir).download_tracks(
+            overwrite, album, track_select
+        )

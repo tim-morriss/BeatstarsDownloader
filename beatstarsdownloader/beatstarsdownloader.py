@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 from halo import Halo  # type: ignore
 from mutagen.id3 import APIC, ID3, TALB, TIT2, TPE1
 from mutagen.mp3 import MP3, HeaderNotFoundError
+from pick import pick
 from PIL import Image as PILImage
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
@@ -187,17 +188,41 @@ class BeatStarsDownloader:
             # print(self.mp3_urls)
             # print(self.artwork)
 
-    def download_tracks(self, overwrite: bool, album: Optional[str] = None) -> None:
+    def _track_select(self, track_select: bool = True) -> None:
+        """
+        Method to allow user to select tracks to download.
+        """
+        selected_tracks = pick(
+            options=self.track_names,
+            title="Which tracks do you want to download? (Use ↑/↓ to move, space "
+            "to select, enter to confirm selection) if you want to download all, "
+            "press enter without selecting anything.",
+            multiselect=True,
+            min_selection_count=0,
+            clear_screen=True,
+        )
+        if selected_tracks:
+            selected_indices = [index for _, index in selected_tracks]
+            self.track_names = [self.track_names[i] for i in selected_indices]
+            self.mp3_urls = [self.mp3_urls[i] for i in selected_indices]
+            self.artwork = [self.artwork[i] for i in selected_indices]
+
+    def download_tracks(
+        self,
+        overwrite: bool,
+        album: Optional[str] = None,
+        track_select: Optional[bool] = None,
+    ) -> None:
         # get a list of tracks with names, artwork urls and mp3 urls
         self._get_tracks()
+
+        if track_select:
+            self._track_select(track_select=track_select)
 
         # make dir if not exists
         if not os.path.exists(self.dir_path):
             os.makedirs(self.dir_path)
 
-        # use stub and mp3_urls to find all mp3 files on AWS and download them
-        # avoid stop stealing beats page by adding in origin and referer to
-        # request headers
         length_of_mp3_urls = len(self.mp3_urls)
         print(chalk.white.bold("-" * 10))
         print(
