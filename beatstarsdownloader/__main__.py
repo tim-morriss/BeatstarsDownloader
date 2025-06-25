@@ -1,13 +1,27 @@
 import argparse
+import datetime
 import sys
 from pathlib import Path
 from typing import Optional
 
-from pick import pick  # type: ignore
+from pick import Picker  # type: ignore
+from typing_extensions import override
 
 import beatstarsdownloader.url_helpers as helpers
 from beatstarsdownloader.beatstarsdownloader import BeatStarsDownloader
 from beatstarsdownloader.config import __title__, __version__
+
+
+class CustomPicker(Picker):
+    def __init__(self, *args, **kwargs):  # type: ignore
+        super().__init__(*args, **kwargs)
+
+    @override
+    def get_title_lines(self, max_width: int = 0) -> list[str]:
+        if self.title:
+            return self.title.split("\n") + [""]
+        else:
+            return []
 
 
 def query_yes_no(question: str, default: str = "yes") -> bool:
@@ -88,9 +102,14 @@ def cli() -> tuple[str, Optional[str], bool, str]:
     else:
         first_menu_options = ["Download an artist's tracks", "Exit program"]
         first_menu_title = (
-            f"{__title__}" f"\n Version: {__version__} " f"\n Copyright 2023"
+            rf"{__title__}"
+            f"\n Version: {__version__}"
+            f"\n Copyright {datetime.datetime.now().year}"
         )
-        _, first_menu_index = pick(first_menu_options, first_menu_title, indicator=">")
+        picker = CustomPicker(
+            options=first_menu_options, title=first_menu_title, indicator=">"
+        )
+        _, first_menu_index = picker.start()
         if first_menu_index == 0:
             url = input("Enter the URL or name of the " "artist you want to scrape: ")
             output_dir = (

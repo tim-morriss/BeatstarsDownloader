@@ -1,4 +1,8 @@
-__version__ = "0.1.1"
+import tomllib  # type: ignore
+from pathlib import Path
+
+with open(Path(__file__).parent.parent / "pyproject.toml", "rb") as f:
+    __version__ = tomllib.load(f)["project"]["version"]
 
 __title__ = r"""
                     (                  (                                                 
@@ -9,5 +13,5 @@ __title__ = r"""
  | _ )(_))((_)_| |_/ __| |_((_)_ ((_|(_)   \ ((_)(()((_)_(_/(| |((_)((_)_  _| (_))  ((_) 
  | _ \/ -_) _` |  _\__ \  _/ _` | '_(_-< |) / _ \ V  V / ' \)) / _ \/ _` / _` / -_)| '_| 
  |___/\___\__,_|\__|___/\__\__,_|_| /__/___/\___/\_/\_/|_||_||_\___/\__,_\__,_\___||_|   
-                                                                                               
+
 """  # noqa
