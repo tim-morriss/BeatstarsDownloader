@@ -1,6 +1,6 @@
 [project]
 name = "beatstarsdownloader"
-version = "0.1.5"
+version = "0.1.6"
 description = "Tool for downloading all BeatStars tracks from an artist to mp3"
 authors = [
     {name = "Tim Morriss", email = "tim.morriss@gmail.com"}

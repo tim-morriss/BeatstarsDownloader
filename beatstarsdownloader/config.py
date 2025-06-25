@@ -1,4 +1,6 @@
-__version__ = "0.1.4"
+import importlib.metadata
+
+__version__ = importlib.metadata.version("beatstarsdownloader")
 
 __title__ = r"""
                     (                  (                                                 

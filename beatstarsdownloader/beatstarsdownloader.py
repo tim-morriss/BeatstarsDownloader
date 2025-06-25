@@ -1,5 +1,6 @@
 import os
 import time
+import warnings
 from io import BytesIO
 from typing import Optional
 from urllib.error import HTTPError
@@ -12,12 +13,15 @@ from halo import Halo  # type: ignore
 from mutagen.id3 import APIC, ID3, TALB, TIT2, TPE1
 from mutagen.mp3 import MP3, HeaderNotFoundError
 from PIL import Image as PILImage
-from pydub import AudioSegment  # type: ignore
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from simple_chalk import chalk  # type: ignore
 
-import beatstarsdownloader.url_helpers as helpers
+# Suppress pydub ffmpeg warning
+warnings.filterwarnings("ignore", "Couldn't find ffmpeg or avconv", RuntimeWarning)
+from pydub import AudioSegment  # type: ignore  # noqa: E402
+
+import beatstarsdownloader.url_helpers as helpers  # noqa: E402
 
 
 class BeatStarsDownloader:
