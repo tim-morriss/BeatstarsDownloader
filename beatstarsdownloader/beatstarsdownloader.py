@@ -14,7 +14,8 @@ from mutagen.id3 import APIC, ID3, TALB, TIT2, TPE1
 from mutagen.mp3 import MP3, HeaderNotFoundError
 from PIL import Image as PILImage
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from simple_chalk import chalk  # type: ignore
 
 # Suppress pydub ffmpeg warning
@@ -33,6 +34,54 @@ class BeatStarsDownloader:
         self.artwork: list[str] = []
         self.track_names: list[str] = []
         self.mp3_urls: list[str] = []
+
+    def _get_webdriver(self) -> webdriver.Remote:
+        """Get webdriver instance, trying browsers in order of preference."""
+        try:
+            firefox_options = FirefoxOptions()
+            firefox_options.add_argument("--headless")
+            firefox_options.set_preference("toolkit.telemetry.enabled", False)
+            firefox_options.set_preference("toolkit.telemetry.unified", False)
+            firefox_options.set_preference("toolkit.telemetry.archive.enabled", False)
+            firefox_options.set_preference(
+                "datareporting.healthreport.uploadEnabled", False
+            )
+            firefox_options.set_preference(
+                "datareporting.policy.dataSubmissionEnabled", False
+            )
+            firefox_options.set_preference("privacy.trackingprotection.enabled", True)
+            firefox_options.set_preference("privacy.donottrackheader.enabled", True)
+            return webdriver.Firefox(options=firefox_options)
+        except Exception:
+            pass
+
+        try:
+            chrome_options = ChromeOptions()
+            chrome_options.add_argument("--headless=new")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+            chrome_options.add_argument("--disable-features=VizDisplayCompositor")
+            chrome_options.add_argument("--disable-logging")
+            chrome_options.add_argument("--disable-metrics")
+            chrome_options.add_argument("--disable-metrics-reporting")
+            chrome_options.add_argument("--disable-crash-reporter")
+            chrome_options.add_argument(
+                "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/91.0.4472.124 Safari/537.36"
+            )
+            chrome_options.add_experimental_option(
+                "excludeSwitches", ["enable-automation"]
+            )
+            chrome_options.add_experimental_option("useAutomationExtension", False)
+            return webdriver.Chrome(options=chrome_options)
+        except Exception:
+            pass
+
+        raise Exception(
+            "No compatible browser found. Please install Chrome, Firefox, or Edge."
+        )
 
     def _scroll_down(self, driver: webdriver.Remote) -> None:
         """
@@ -72,18 +121,14 @@ class BeatStarsDownloader:
         with Halo(
             text=chalk.white.bold("Starting Selenium Webdriver..."), spinner="dots"
         ) as h:
-            options = Options()
-            options.add_argument("--headless")
-            # options = webdriver.FirefoxOptions()
-            # options.headless = True
-            driver = webdriver.Firefox(options=options)
+            driver = self._get_webdriver()
             driver.get(url)
             self._scroll_down(driver)
             page_source = driver.page_source
             driver.quit()
             h.stop_and_persist(
                 symbol=f'{chalk.green("✔")}',
-                text=chalk.green.dim("Selenium page loaded..."),
+                text=chalk.green.dim(f"Selenium page loaded using {driver.name}..."),
             )
         soup = BeautifulSoup(page_source, "html.parser")
         title_element = soup.find("span", {"class": "title"})
