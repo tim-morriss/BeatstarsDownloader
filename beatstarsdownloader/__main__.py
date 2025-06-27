@@ -51,7 +51,7 @@ def show_welcome_screen() -> None:
     welcome_content.append(copyright_text)
 
     # Calculate the width based on the longest line in the ASCII art plus padding
-    logo_lines = __title__.strip().split('\n')
+    logo_lines = __title__.strip().split("\n")
     max_logo_width = max(len(line) for line in logo_lines if line.strip())
     panel_width = max_logo_width + 12  # Add more padding around the logo
 
