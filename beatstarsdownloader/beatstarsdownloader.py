@@ -25,6 +25,7 @@ warnings.filterwarnings("ignore", "Couldn't find ffmpeg or avconv", RuntimeWarni
 from pydub import AudioSegment  # type: ignore  # noqa: E402
 
 import beatstarsdownloader.url_helpers as helpers  # noqa: E402
+from beatstarsdownloader.logger import debug_logger  # noqa: E402
 
 # Unified questionary style for consistent formatting
 QUESTIONARY_STYLE = questionary.Style(
@@ -290,6 +291,13 @@ class BeatStarsDownloader:
                     try:
                         mp3 = MP3(BytesIO(content))
                     except HTTPError as e:
+                        debug_logger.debug_track_download_error(
+                            track_name=self.track_names[i],
+                            track_number=num,
+                            total_tracks=length_of_mp3_urls,
+                            error=e,
+                            url=self.mp3_urls[i],
+                        )
                         halo.stop_and_persist(
                             symbol=str(f'{chalk.red("✖")}'),
                             text=chalk.red.dim(f"HTTP ERROR: {e}"),
@@ -304,6 +312,13 @@ class BeatStarsDownloader:
                                 )
                             )
                         else:
+                            debug_logger.debug_track_download_error(
+                                track_name=self.track_names[i],
+                                track_number=num,
+                                total_tracks=length_of_mp3_urls,
+                                error=e,
+                                url=self.mp3_urls[i],
+                            )
                             halo.stop_and_persist(
                                 symbol=str(f'{chalk.red("✖")}'),
                                 text=chalk.red.dim(
@@ -322,7 +337,12 @@ class BeatStarsDownloader:
                         mp3.tags["TIT2"] = TIT2(encoding=3, text=self.track_names[i])
                     try:
                         album_art = urlopen(self.artwork[i]).read()
-                    except (ValueError, HTTPError):
+                    except (ValueError, HTTPError) as e:
+                        debug_logger.debug_error(
+                            f"Artwork download failed for track "
+                            f"{num}/{length_of_mp3_urls}: {self.track_names[i]} - "
+                            f"{str(e)} - URL: {self.artwork[i]}"
+                        )
                         album_art = helpers.try_artwork(self.artwork, i)
                     # Convert image to PNG for compatibility
                     pil_img = PILImage.open(BytesIO(album_art))
@@ -351,6 +371,11 @@ class BeatStarsDownloader:
                         ),
                     )
                 else:
+                    debug_logger.debug_error(
+                        f"BeatStars error for track {num}/{length_of_mp3_urls}: "
+                        f"{self.track_names[i]} - No content returned from "
+                        f"URL: {self.mp3_urls[i]}"
+                    )
                     halo.stop_and_persist(
                         symbol=str(f'{chalk.red("✖")}'),
                         text=chalk.red.dim(

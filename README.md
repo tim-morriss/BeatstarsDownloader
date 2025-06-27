@@ -108,6 +108,27 @@ beatstarsdownloader example_url_list.txt
 Example list of urls:
 ![image](https://raw.githubusercontent.com/tim-morriss/beatstarsdownloader/main/media/example_url_list.png)
 
+## Debug Mode
+
+To enable debug logging for troubleshooting download issues, set the `BEATSTARS_DEBUG` environment variable:
+
+```bash
+export BEATSTARS_DEBUG=1
+beatstarsdownloader <beatstars-url>
+```
+
+Or run it inline:
+```bash
+BEATSTARS_DEBUG=1 beatstarsdownloader <beatstars-url>
+```
+
+Debug mode will show detailed error information when tracks fail to download, including:
+- Track names and numbers that failed
+- Specific error messages and types
+- URLs that caused issues
+
+Accepted values for `BEATSTARS_DEBUG`: `1`, `true`, `yes`, `on` (case insensitive)
+
 # Disclaimer
 
 **THIS TOOL IS STRICTLY FOR EDUCATIONAL PURPOSES ONLY.**
