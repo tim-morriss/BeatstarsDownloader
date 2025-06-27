@@ -176,6 +176,7 @@ def cli() -> tuple[str, Optional[str], bool, str, Optional[bool]]:
         return output_dir, album, overwrite, url, track_select
 
 
+
 def run() -> None:
     output_dir, album, overwrite, url, track_select = cli()
 
