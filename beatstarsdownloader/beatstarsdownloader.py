@@ -13,7 +13,6 @@ from bs4 import BeautifulSoup
 from halo import Halo  # type: ignore
 from mutagen.id3 import APIC, ID3, TALB, TIT2, TPE1
 from mutagen.mp3 import MP3, HeaderNotFoundError
-from pick import pick
 from PIL import Image as PILImage
 from rich.console import Console
 from selenium import webdriver
@@ -243,7 +242,6 @@ class BeatStarsDownloader:
             console.print(
                 "\n[yellow]No tracks selected. Downloading all tracks.[/yellow]"
             )
-
 
     def download_tracks(
         self,
