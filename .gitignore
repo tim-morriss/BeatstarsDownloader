@@ -8,5 +8,7 @@ tracklist.txt
 /dist/
 *.ipynb
 *.log
-instructions.txt
 *.egg-info
+CLAUDE.md
+.claude/
+.charm/

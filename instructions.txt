@@ -1,9 +1,0 @@
---Building
-python -m build
-* This creates a source distribution
-
---Uploading the distribution to Pypi Testing
-twine upload --repository testpypi dist/* --verbose
-
---Uploading the distribution to pypi (for real)
-twine upload dist/* --verbose
