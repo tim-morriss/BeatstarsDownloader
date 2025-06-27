@@ -7,13 +7,14 @@ from urllib.error import HTTPError
 from urllib.request import urlopen
 
 import filetype  # type: ignore
+import questionary
 import validators  # type: ignore
 from bs4 import BeautifulSoup
 from halo import Halo  # type: ignore
 from mutagen.id3 import APIC, ID3, TALB, TIT2, TPE1
 from mutagen.mp3 import MP3, HeaderNotFoundError
-from pick import pick
 from PIL import Image as PILImage
+from rich.console import Console
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
@@ -24,6 +25,19 @@ warnings.filterwarnings("ignore", "Couldn't find ffmpeg or avconv", RuntimeWarni
 from pydub import AudioSegment  # type: ignore  # noqa: E402
 
 import beatstarsdownloader.url_helpers as helpers  # noqa: E402
+
+# Unified questionary style for consistent formatting
+QUESTIONARY_STYLE = questionary.Style(
+    [
+        ("question", "bold fg:#00aaaa"),
+        ("pointer", "fg:#00aaaa bold"),
+        ("highlighted", "fg:#00aaaa bold"),
+        ("selected", "fg:#00aa00 bold"),
+        ("checkbox", "fg:#00aaaa bold"),
+        ("checkbox-selected", "fg:#00aa00 bold"),
+        ("answer", "fg:#00aa00 bold"),
+    ]
+)
 
 
 class BeatStarsDownloader:
@@ -192,20 +206,42 @@ class BeatStarsDownloader:
         """
         Method to allow user to select tracks to download.
         """
-        selected_tracks = pick(
-            options=self.track_names,
-            title="Which tracks do you want to download? (Use ↑/↓ to move, space "
-            "to select, enter to confirm selection) if you want to download all, "
-            "press enter without selecting anything.",
-            multiselect=True,
-            min_selection_count=0,
-            clear_screen=True,
+
+        console = Console()
+
+        # Create choices for questionary with track names
+        track_choices = [
+            questionary.Choice(title=f"{i+1}. {track_name}", value=i)
+            for i, track_name in enumerate(self.track_names)
+        ]
+
+        console.print("\n[bold cyan]Select tracks to download:[/bold cyan]")
+        console.print(
+            "[dim]Use space to select/deselect, arrow keys to navigate, "
+            "enter to confirm[/dim]"
         )
-        if selected_tracks:
-            selected_indices = [index for _, index in selected_tracks]
+
+        selected_indices = questionary.checkbox(
+            "Which tracks would you like to download?",
+            choices=track_choices,
+            style=QUESTIONARY_STYLE,
+        ).ask()
+
+        if selected_indices is not None and len(selected_indices) > 0:
+            # Filter tracks based on selection
+
             self.track_names = [self.track_names[i] for i in selected_indices]
             self.mp3_urls = [self.mp3_urls[i] for i in selected_indices]
             self.artwork = [self.artwork[i] for i in selected_indices]
+
+            console.print(
+                f"\n[green]Selected {len(selected_indices)} tracks for "
+                "download.[/green]"
+            )
+        else:
+            console.print(
+                "\n[yellow]No tracks selected. Downloading all tracks.[/yellow]"
+            )
 
     def download_tracks(
         self,

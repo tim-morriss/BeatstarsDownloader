@@ -1,58 +1,81 @@
 import argparse
 import datetime
+import os
 import sys
 from pathlib import Path
 from typing import Optional
 
-from pick import Picker  # type: ignore
-from typing_extensions import override
+import questionary
+from rich.console import Console
+from rich.panel import Panel
+from rich.text import Text
 
 import beatstarsdownloader.url_helpers as helpers
 from beatstarsdownloader.beatstarsdownloader import BeatStarsDownloader
 from beatstarsdownloader.config import __title__, __version__
 
+console = Console()
 
-class CustomPicker(Picker):
-    def __init__(self, *args, **kwargs):  # type: ignore
-        super().__init__(*args, **kwargs)
+# Unified questionary style for consistent formatting
+QUESTIONARY_STYLE = questionary.Style(
+    [
+        ("question", "bold fg:#00aaaa"),
+        ("pointer", "fg:#00aaaa bold"),
+        ("highlighted", "fg:#00aaaa bold"),
+        ("selected", "fg:#00aa00 bold"),
+        ("checkbox", "fg:#00aaaa bold"),
+        ("checkbox-selected", "fg:#00aa00 bold"),
+        ("answer", "fg:#00aa00 bold"),
+    ]
+)
 
-    @override
-    def get_title_lines(self, max_width: int = 0) -> list[str]:
-        if self.title:
-            return self.title.split("\n") + [""]
-        else:
-            return []
+
+def clear_screen() -> None:
+    """Clear the terminal screen."""
+    os.system("cls" if os.name == "nt" else "clear")
 
 
-def query_yes_no(question: str, default: str = "yes") -> bool:
-    """Ask a yes/no question via raw_input() and return their answer.
+def show_welcome_screen() -> None:
+    """Display a styled welcome screen."""
+    clear_screen()
 
-    "question" is a string that is presented to the user.
-    "default" is the presumed answer if the user just hits <Enter>.
-            It must be "yes" (the default), "no" or None (meaning
-            an answer is required of the user).
+    title_text = Text(__title__, style="bold blue")
+    version_text = Text(f"Version: {__version__}", style="dim")
+    copyright_text = Text(f"Copyright {datetime.datetime.now().year}", style="dim")
 
-    The "answer" return value is True for "yes" or False for "no".
-    """
-    valid = {"yes": True, "y": True, "ye": True, "no": False, "n": False}
-    if default is None:
-        prompt = " [y/n] "
-    elif default == "yes":
-        prompt = " [Y/n] "
-    elif default == "no":
-        prompt = " [y/N] "
-    else:
-        raise ValueError("invalid default answer: '%s'" % default)
+    welcome_content = Text()
+    welcome_content.append(title_text)
+    welcome_content.append("\n")
+    welcome_content.append(version_text)
+    welcome_content.append("\n")
+    welcome_content.append(copyright_text)
 
-    while True:
-        sys.stdout.write(question + prompt)
-        choice = input().lower()
-        if default is not None and choice == "":
-            return valid[default]
-        elif choice in valid:
-            return valid[choice]
-        else:
-            sys.stdout.write("Please respond with 'yes' or 'no' " "(or 'y' or 'n').\n")
+    # Calculate the width based on the longest line in the ASCII art plus padding
+    logo_lines = __title__.strip().split("\n")
+    max_logo_width = max(len(line) for line in logo_lines if line.strip())
+    panel_width = max_logo_width + 12  # Add more padding around the logo
+
+    panel = Panel(
+        welcome_content,
+        title="BeatStars Downloader",
+        border_style="blue",
+        padding=(1, 2),
+        width=panel_width,
+    )
+    console.print(panel)
+
+
+def show_main_menu() -> bool:
+    """Show main menu and return True to continue, False to exit."""
+    choice = questionary.select(
+        "What would you like to do?",
+        choices=["Download an artist's tracks", "Exit program"],
+        style=QUESTIONARY_STYLE,
+    ).ask()
+
+    if choice is None:
+        return False
+    return bool(choice == "Download an artist's tracks")
 
 
 def cli() -> tuple[str, Optional[str], bool, str, Optional[bool]]:
@@ -109,47 +132,48 @@ def cli() -> tuple[str, Optional[str], bool, str, Optional[bool]]:
         track_select = args.track_select
         return output_dir, album, overwrite, url, track_select
     else:
-        first_menu_options = ["Download an artist's tracks", "Exit program"]
-        first_menu_title = (
-            rf"{__title__}"
-            f"\n Version: {__version__}"
-            f"\n Copyright {datetime.datetime.now().year}"
+        show_welcome_screen()
+
+        if not show_main_menu():
+            console.print("\n[yellow]Goodbye![/yellow]")
+            sys.exit(0)
+
+        console.print("\n[bold green]Let's get started![/bold green]")
+
+        url = questionary.text(
+            "Enter the URL or name of the artist you want to scrape:",
+            style=QUESTIONARY_STYLE,
+        ).ask()
+
+        default_dir = str(Path.home()) + "/beatstarsdownloader"
+        output_dir = questionary.text(
+            f"Output directory (default: {default_dir}):",
+            default=default_dir,
+            style=QUESTIONARY_STYLE,
+        ).ask()
+
+        overwrite = questionary.confirm(
+            "Overwrite files if they already exist?",
+            default=False,
+            style=QUESTIONARY_STYLE,
+        ).ask()
+
+        album = (
+            questionary.text(
+                "Album ID3 tag (for music library sorting, leave blank to skip):",
+                default="",
+                style=QUESTIONARY_STYLE,
+            ).ask()
+            or None
         )
-        picker = CustomPicker(
-            options=first_menu_options, title=first_menu_title, indicator=">"
-        )
-        _, first_menu_index = picker.start()
-        if first_menu_index == 0:
-            url = input("Enter the URL or name of the " "artist you want to scrape: ")
-            output_dir = (
-                input(
-                    "What is the output directory you want to use "
-                    "(leave blank for default): "
-                )
-                or str(Path.home()) + "/beatstarsdownloader"
-            )
-            overwrite = query_yes_no(
-                "Overwrite files if they already exist?", default="no"
-            )
-            album = (
-                input(
-                    "Do you want to save the output with an album ID3 "
-                    "tag (good for sorting in your music library, "
-                    "leave blank to turn off): "
-                )
-                or None
-            )
-            track_select = query_yes_no(
-                "BeatstarsDownloader can download all tracks by an artist or "
-                "download specific tracks. Do you want to select the tracks "
-                "to download?",
-                default="no",
-            )
-            return output_dir, album, overwrite, url, track_select
-        elif first_menu_index == 1:
-            exit()
-        else:
-            raise ValueError("Invalid menu selection")
+
+        track_select = questionary.confirm(
+            "Do you want to select specific tracks to download?",
+            default=False,
+            style=QUESTIONARY_STYLE,
+        ).ask()
+
+        return output_dir, album, overwrite, url, track_select
 
 
 def run() -> None:
